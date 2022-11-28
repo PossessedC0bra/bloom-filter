@@ -34,7 +34,7 @@ public class Bloom {
         int[] flt = new int[size];
 
         for( String word : set){
-            filter[...hashSomethingSomething(word)] = 1;
+            flt[...hashSomethingSomething(word)] = 1;
         }
         return flt;
     }

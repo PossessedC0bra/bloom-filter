@@ -1,0 +1,78 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{listings}
+
+\title{Bloom Filter}
+\author{ Yannick Koller & Mike Gilgen }
+\date{November 2022}
+
+\begin{document}
+\maketitle
+
+\section{Einleitung}
+Der Bloom Filter, benannt nach dem Erfinder Burton Howard Bloom, ist eine Datenstruktur die auf die Wahrscheinlichkeit basiert. Dies macht diese Datenstruktur sehr Speichereffizient, da die unnötigen Diskzugriffe um einen Bruchteil reduziert. Ein Nachteil, gegenüber den bekannten Datenstrukturen, ist jedoch die Fehleranfällig dieser Datenstruktur. Trotzdem findet sie in der Praxis viele Anwendung, weil sie so effizient ist und in gewissen Bereichen es gar nicht nötig ist 1:1 die Daten abzufragen.
+
+\section{Vor- und Nachteile}
+Hier ein paar Vor- und Nachteile
+\begin{center}
+\begin{tabular}{c|c}
+    Vorteil & Nachteil \\
+    \hline
+    Speichereffizient & Fehleranfällig \\
+\end{tabular}
+\end{center}
+Die Fehleranfälligkeit gilt allerdings nur für Abgefragte Elemente die sich nicht in der Menge im Speicher befindet. Zu diesem Fehler kommt es, wenn ein abgefrages Element ein "Hash-Overlap", also den gleichen Hashwert hat, wie ein Wert in der Menge. Für alle gesuchten Elemente, die sich nicht in der Menge befinden, kann man dafür eine klare Aussage machen, dass sie nicht in der Menge ist. Daraus folgen zwei Aussagen die diese Datenstruktur zurückgibt wenn man ein Element abfrägt:
+
+\begin{itemize}
+    \item Is probably in set (positive)
+    \item Is definitely not in set (negative)
+\end{itemize}
+
+\clearpage
+
+\section{Praxisbeispiel}
+Der Google Webbrowser Chrome benützt den Bloomfilter um URLs durch die potenziell Malware verbreitet wird zu untersuchen. Malwarescans sind sehr rechenaufwändig, vor allem wenn diese Malware noch nicht bekannt ist. Darum wird beim Chrome jede URL erst durch den Bloomfilter überprüft und nur wenn es ein positives Resultat erzeugt, wird die URL komplett untersucht.
+
+\section{Funktionsweise}
+Die Funktionsweise des Bloomfilters ist am besten durch den verwendeten Algorithmus zu erklären. Folgende Komponenten sind dabei notwendig:
+
+\begin{itemize}
+    \item Bit-Array mit $m$ Bits 
+        \begin{itemize}
+            \item{Dieser dient als Filter}
+        \end{itemize}
+    \item Gewünschte Fehlerquote $p$
+    \item Anzahl Hashfunktionen $k$
+\end{itemize}
+
+Die aufgelisteten Variablen können mit folgenden Formeln berechnet werden:
+
+\begin{equation}
+    m = -\frac{n \ln{p}}{(\ln{2})^2}
+\end{equation}
+\begin{equation}
+    k = \frac{m}{n} \ln{2}
+\end{equation}
+\begin{center}
+    \textit{Die Herleitung de Formeln sind in Wikipedia zu finden.}
+\end{center}
+Sind diese Variabeln bekann kann der Filter aufgebaut werden.
+\begin{center}
+    \textit{pseudo Code}
+\end{center}
+\begin{lstlisting}
+    boolean[] buildFilter(int size, Set<E> data){
+        boolean[] filter = new boolean[size];
+    
+        // feeding the filter
+        for( E element : data ) {
+            filter[hashK(element)] = true;
+        }
+    }
+\end{lstlisting}
+
+
+\section{Erkenntnisse aus unserem Projekt}
+
+\end{document}
