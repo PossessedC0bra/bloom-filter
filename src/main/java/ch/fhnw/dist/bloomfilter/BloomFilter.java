@@ -21,8 +21,8 @@ public class BloomFilter {
      * @param p false positive rate
      */
     public BloomFilter(int n, double p) {
-        int m = (int) Math.ceil(-((n * Math.log(p)) / Math.pow(Math.log(2), 2)));
-        int k = (int) Math.ceil(((m / n) * Math.log(2)));
+        int m = Math.max(1, (int) -((n * Math.log(p)) / (Math.log(2) * Math.log(2))));
+        int k = Math.max(1, (int) (((double) m / n) * Math.log(2)));
 
         hashFunctions = new HashFunction[k];
         for (int i = 0; i < k; i++) {
@@ -47,11 +47,11 @@ public class BloomFilter {
 
     /**
      * Returns <code>true</code> when the given string <b>might</b> have been added to this bloom filter or
-     * <code>false</code> when the given string <b>definetly</b> was not added to the bloom filter
+     * <code>false</code> when the given string <b>definitely</b> was not added to the bloom filter
      *
      * @param s the string to test
      * @return true if the given string might have been added </br>
-     * false if the given string was definetly not added
+     * false if the given string was definitely not added
      */
     public boolean mightContain(String s) {
         for (HashFunction hashFunction : hashFunctions) {
@@ -64,6 +64,6 @@ public class BloomFilter {
     }
 
     private int getIndex(int hash) {
-        return Math.abs(hash) & (bits.length - 1);
+        return Math.abs(hash) % bits.length;
     }
 }
