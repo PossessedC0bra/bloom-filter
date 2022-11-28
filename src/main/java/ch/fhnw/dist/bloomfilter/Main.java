@@ -30,7 +30,7 @@ public class Main {
                 falsePositives++;
             }
         }
-
+        System.out.println(String.format("Tested words: %d", words.length / 2));
         System.out.println(String.format("False positives: %d", falsePositives));
         System.out.println(String.format("False positives rate: %f", (double) falsePositives / (words.length / 2)));
     }

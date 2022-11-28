@@ -2,6 +2,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath}
 \usepackage{listings}
+\usepackage{graphicx}
 
 \title{Bloom Filter}
 \author{ Yannick Koller & Mike Gilgen }
@@ -38,12 +39,13 @@ Der Google Webbrowser Chrome benützt den Bloomfilter um URLs durch die potenzie
 Die Funktionsweise des Bloomfilters ist am besten durch den verwendeten Algorithmus zu erklären. Folgende Komponenten sind dabei notwendig:
 
 \begin{itemize}
-    \item Bit-Array mit $m$ Bits 
+    \item Bit-Array mit $m$ Bits
         \begin{itemize}
             \item{Dieser dient als Filter}
         \end{itemize}
     \item Gewünschte Fehlerquote $p$
     \item Anzahl Hashfunktionen $k$
+    \item Array für alle verwendeten Hashfunktionen
 \end{itemize}
 
 Die aufgelisteten Variablen können mit folgenden Formeln berechnet werden:
@@ -62,17 +64,55 @@ Sind diese Variabeln bekann kann der Filter aufgebaut werden.
     \textit{pseudo Code}
 \end{center}
 \begin{lstlisting}
-    boolean[] buildFilter(int size, Set<E> data){
-        boolean[] filter = new boolean[size];
-    
+    // defining the Arrays
+    HashFunctions[] hashFunctions;
+    boolean[] filter;
+
+    // defining the Hashalgorithms and build an empty filter
+    boolean[] buildFilter(int n, double p){
+        int m = (int) -((n * Math.log(p)) / (Math.log(2) * Math.log(2)));
+        int k = (int) ((m / n) * Math.log(2));
+
+        hashFunctions = new HashFunction[k];
         // feeding the filter
-        for( E element : data ) {
-            filter[hashK(element)] = true;
+        for( int i = 0; i < k; i++ ) {
+            hashFunctions[i] = Hashing.<hashAlogrithm>(RandomInt);
+        }
+        filter = new boolean[m] // empty filter
+    }
+\end{lstlisting}
+Nun steht der Filter und die Hashing Algorithmen für die Datenstruktur sind definiert. Jetzt muss der Filter nur noch die richtigen Bits gesetzt haben. Dafür dient folgende Methode:
+\begin{lstlisting}
+    void add(E element){
+        for( HashFunction hashFunction : hashFunctions ){
+            filter[hashFunction(element)] = true;
         }
     }
 \end{lstlisting}
+Für jedes Element das hinzugefügt wird, wird an jedem Index der durch die Hash Funktionen zurückgegeben wird der Wert auf $true$ gesetzt. \\
+Bei der Abfrage ob nun ein gesuchtes Element in der Datenstruktur enthalten ist, kann nun der Filter auf dieselbe Weise abgefragt werden.
 
+\begin{lstlisting}
+    boolean mightContain(E element){
+        for( HashFunction hashFunction : hashFunctions ){
+            if( !filter[hashFunction(element)] ){
+                return false;
+            }
+        }
+        return true;
+    }
+\end{lstlisting}
+Wenn nur eine Stelle im Filter $false$ ist weiss man, dass sich das Element garantiert nicht in der Menge befindet. Andernfalls gilt die Wahrscheinlichkeit $p$, dass sich das Element in der Menge befindet.
+
+\clearpage
 
 \section{Erkenntnisse aus unserem Projekt}
+Wir testeten unser Filter mit der eigenen Liste indem wir jeweils nur jeden ungeraden Index in den Filter aufnahmen, mit einer False-Positive Wahrscheinlichkeit $p = 0,2$. Die False Positives zählten wir, indem wir nun jeden geraden Index abfragten, also jede Abfrage war ein Mismatch. Dadurch variierte die Anzahl der False Positives zwischen 5600 und 5900 und die False Positives Rate schwankte um $0,2 \pm 0,01$ herum. Die False Positives Rate entspricht somit ziemlich genau der definierten Wahrscheinlichkeit $p = 0,2$. Die Anzahl der False Positives ist in demfall auch gleich die Anzahl der Hashing-Overlaps.
+\begin{figure}[h!]
+    \centering
+    \includegraphics{./lib/dist_bloomResult.png}
+    \caption{Bloom Result}
+    \label{fig:Bloom Result}
+\end{figure}
 
 \end{document}
