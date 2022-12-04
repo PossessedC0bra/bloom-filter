@@ -140,4 +140,7 @@ fabric.properties
 hs_err_pid*
 replay_pid*
 
+# MS Windows Files
+*.DS_Store
+
 # End of https://www.toptal.com/developers/gitignore/api/intellij,java
