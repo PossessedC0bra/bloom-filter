@@ -3,67 +3,71 @@
 \usepackage{amsmath}
 \usepackage{listings}
 \usepackage{graphicx}
+\usepackage{hyperref}
 
 \title{Bloom Filter}
 \author{ Yannick Koller & Mike Gilgen }
 \date{November 2022}
 
 \begin{document}
-\maketitle
+    \maketitle
 
-\section{Einleitung}
-Der Bloom Filter, benannt nach dem Erfinder Burton Howard Bloom, ist eine Datenstruktur die auf die Wahrscheinlichkeit basiert. Dies macht diese Datenstruktur sehr Speichereffizient, da die unnötigen Diskzugriffe um einen Bruchteil reduziert. Ein Nachteil, gegenüber den bekannten Datenstrukturen, ist jedoch die Fehleranfällig dieser Datenstruktur. Trotzdem findet sie in der Praxis viele Anwendung, weil sie so effizient ist und in gewissen Bereichen es gar nicht nötig ist 1:1 die Daten abzufragen.
 
-\section{Vor- und Nachteile}
-Hier ein paar Vor- und Nachteile
-\begin{center}
-\begin{tabular}{c|c}
-    Vorteil & Nachteil \\
-    \hline
-    Speichereffizient & Fehleranfällig \\
-\end{tabular}
-\end{center}
-Die Fehleranfälligkeit gilt allerdings nur für Abgefragte Elemente die sich nicht in der Menge im Speicher befindet. Zu diesem Fehler kommt es, wenn ein abgefrages Element ein "Hash-Overlap", also den gleichen Hashwert hat, wie ein Wert in der Menge. Für alle gesuchten Elemente, die sich nicht in der Menge befinden, kann man dafür eine klare Aussage machen, dass sie nicht in der Menge ist. Daraus folgen zwei Aussagen die diese Datenstruktur zurückgibt wenn man ein Element abfrägt:
+    \section{Einleitung}
+    Ein Bloom Filter, benannt nach seinem Erfinder Burton Howard Bloom, ist eine auf Wahrscheinlichkeit basierende Set Datenstruktur. Anders als herkömmliche Set Datenstrukturen erlaubt der Bloom Filter kein entfernen von Elementen und liefert kein garantiertes Ergebniss für die Zugehörigkeit eines Elements. Dies erlaubt es einem Bloom Filter Speichereffizienter zu sein als herkömmliche Set Datenstrukturen.
 
-\begin{itemize}
-    \item Is probably in set (positive)
-    \item Is definitely not in set (negative)
-\end{itemize}
 
-\clearpage
+    \section{Vor- und Nachteile}
+    \begin{center}
+        \begin{tabular}{c|c}
+            Vorteil                & Nachteil                            \\
+            \hline
+            Effizient              & Fixe Grösse                         \\
+            Keine false negatives  & Möglichkeit von false positives     \\
+            Einfügen immer möglich & Kann überfüllen                     \\
+            & Löschen von Elementen nicht möglich \\
+        \end{tabular}
+    \end{center}
+    Die Möglichkeit von false positives ist sogenannten "Hash-Overlaps" geschuldet. Dabei kommt es bei nicht in der Menge vorhandem Elementen zu den selben Hashwerten wie bei einem anderen, bereits in der Menge enthaltenem Elemen. Für alle gesuchten Elemente, die sich nicht in der Menge befinden, kann man dafür eine klare Aussage machen, dass sie nicht in der Menge ist. Daraus folgen zwei Aussagen die diese Datenstruktur zurückgibt wenn man die Zugehörigkeit eines Elements abfragt:
 
-\section{Praxisbeispiel}
-Der Google Webbrowser Chrome benützt den Bloomfilter um URLs durch die potenziell Malware verbreitet wird zu untersuchen. Malwarescans sind sehr rechenaufwändig, vor allem wenn diese Malware noch nicht bekannt ist. Darum wird beim Chrome jede URL erst durch den Bloomfilter überprüft und nur wenn es ein positives Resultat erzeugt, wird die URL komplett untersucht.
+    \begin{itemize}
+        \item Is probably in set (positive)
+        \item Is definitely not in set (negative)
+    \end{itemize}
 
-\section{Funktionsweise}
-Die Funktionsweise des Bloomfilters ist am besten durch den verwendeten Algorithmus zu erklären. Folgende Komponenten sind dabei notwendig:
+    \clearpage
 
-\begin{itemize}
-    \item Bit-Array mit $m$ Bits
-        \begin{itemize}
-            \item{Dieser dient als Filter}
-        \end{itemize}
-    \item Gewünschte Fehlerquote $p$
-    \item Anzahl Hashfunktionen $k$
-    \item Array für alle verwendeten Hashfunktionen
-\end{itemize}
 
-Die aufgelisteten Variablen können mit folgenden Formeln berechnet werden:
+    \section{Praxisbeispiel}
+    Der Webbrowser Google Chrome verwendete einen Bloomfilter um potenziell gefährliche URLs (wie z.B. Spam oder Malware) zu erkennen. Malwarescans werden auf Googles eigenen Servers gemacht was diese Operation Zeit- und Rechenaufwändig macht. Damit nicht jede Seite einem solchen Malwarescan unterzogen wird zuerst der Bloom Filter befragt, ob eine URL potenziell gefährlich ist. Nur bei einem positiven Resultat wird die URL auf Googles eigenen Servers einem Malewarescan unterzogen.
 
-\begin{equation}
-    m = -\frac{n \ln{p}}{(\ln{2})^2}
-\end{equation}
-\begin{equation}
-    k = \frac{m}{n} \ln{2}
-\end{equation}
-\begin{center}
-    \textit{Die Herleitung de Formeln sind in Wikipedia zu finden.}
-\end{center}
-Sind diese Variabeln bekann kann der Filter aufgebaut werden.
-\begin{center}
-    \textit{pseudo Code}
-\end{center}
-\begin{lstlisting}
+
+    \section{Funktionsweise}
+    Folgende Variablen werden für einen Bloom Filter benötigt:
+
+    \begin{itemize}
+        \item Erwartete Anzahl an Elementen $n$
+        \item Gewünschte Fehlerquote $p$
+        \item Anzahl benötigte Bits $m$
+        \item Anzahl unterschiedliche Hashfunktionen $k$
+    \end{itemize}
+
+    Die optimalen Werte für Variablen $m$ und $k$ lassen sich aus $n$ und $p$ mit folgenden Formeln errechnen:
+
+    \begin{equation}
+        m = -\frac{n \ln{p}}{(\ln{2})^2}
+    \end{equation}
+    \begin{equation}
+        k = \frac{m}{n} \ln{2}
+    \end{equation}
+    \begin{center}
+        \textit{Die Herleitung der Formeln sind auf \href{https://en.wikipedia.org/wiki/Bloom_filter\#Optimal_number_of_hash_functions}{Wikipedia} auffindbar.}
+    \end{center}
+    Sind Variablen $m$ und $k$ bekannt, kann ein neuer, leerer Bloom Filter erstellt werden.
+    \begin{center}
+        \textit{pseudo Code}
+    \end{center}
+    \begin{lstlisting}
     // defining the Arrays
     HashFunctions[] hashFunctions;
     boolean[] filter;
@@ -80,19 +84,23 @@ Sind diese Variabeln bekann kann der Filter aufgebaut werden.
         }
         filter = new boolean[m] // empty filter
     }
-\end{lstlisting}
-Nun steht der Filter und die Hashing Algorithmen für die Datenstruktur sind definiert. Jetzt muss der Filter nur noch die richtigen Bits gesetzt haben. Dafür dient folgende Methode:
-\begin{lstlisting}
+    \end{lstlisting}
+    Nun sind alle benötigten Komponenten des Bloom Filter verfügbar und der Filter lässt sich mit folgender Methode mit Elementen befüllen:
+    \begin{center}
+        \textit{pseudo Code}
+    \end{center}
+    \begin{lstlisting}
     void add(E element){
         for( HashFunction hashFunction : hashFunctions ){
             filter[hashFunction(element)] = true;
         }
     }
-\end{lstlisting}
-Für jedes Element das hinzugefügt wird, wird an jedem Index der durch die Hash Funktionen zurückgegeben wird der Wert auf $true$ gesetzt. \\
-Bei der Abfrage ob nun ein gesuchtes Element in der Datenstruktur enthalten ist, kann nun der Filter auf dieselbe Weise abgefragt werden.
-
-\begin{lstlisting}
+    \end{lstlisting}
+    Die Abfrage, ob ein Element möglicherweise im Bloom Filter enthalten ist, funktioniert fast analog dem Einfügen:
+    \begin{center}
+        \textit{pseudo Code}
+    \end{center}
+    \begin{lstlisting}
     boolean mightContain(E element){
         for( HashFunction hashFunction : hashFunctions ){
             if( !filter[hashFunction(element)] ){
@@ -101,18 +109,21 @@ Bei der Abfrage ob nun ein gesuchtes Element in der Datenstruktur enthalten ist,
         }
         return true;
     }
-\end{lstlisting}
-Wenn nur eine Stelle im Filter $false$ ist weiss man, dass sich das Element garantiert nicht in der Menge befindet. Andernfalls gilt die Wahrscheinlichkeit $p$, dass sich das Element in der Menge befindet.
+    \end{lstlisting}
+    Sobald an einer Stelle im Filter der Wert $false$ angetroffen wird, kann mit 100% Sicherheit gesagt werden, dass ein Element nicht im Bloom Filter enthalten ist.
 
-\clearpage
+    \clearpage
 
-\section{Erkenntnisse aus unserem Projekt}
-Wir testeten unser Filter mit der eigenen Liste indem wir jeweils nur jeden ungeraden Index in den Filter aufnahmen, mit einer False-Positive Wahrscheinlichkeit $p = 0,2$. Die False Positives zählten wir, indem wir nun jeden geraden Index abfragten, also jede Abfrage war ein Mismatch. Dadurch variierte die Anzahl der False Positives zwischen 5600 und 5900 und die False Positives Rate schwankte um $0,2 \pm 0,01$ herum. Die False Positives Rate entspricht somit ziemlich genau der definierten Wahrscheinlichkeit $p = 0,2$. Die Anzahl der False Positives ist in demfall auch gleich die Anzahl der Hashing-Overlaps.
-\begin{figure}[h!]
-    \centering
-    \includegraphics{./lib/dist_bloomResult.png}
-    \caption{Bloom Result}
-    \label{fig:Bloom Result}
-\end{figure}
+
+    \section{Erkenntnisse aus unserem Projekt}
+    Wir testen unseren Bloom Filter mit der erhaltenen Wörterliste. Dabei fügen wir nur die Hälfte aller Wörter in den Bloom Filter ein. Die erwartete False-Positive Wahrscheinlichkeit haben wir mit $p = 0,2$ initialisert.
+    \\
+    Mit der anderen Hälte überprüfen wir die Korrektheit des Bloom Filters. Dabei zählen wir die False Positives und Vergleich deren Anteil im vergleich zur Totalanzahl an Wörtern. In unseren Versuchen variierte die Anzahl der False Positives zwischen 5600 und 5900 und die False Positives Rate schwankte um $0,2 \pm 0,01$ herum. Die False Positives Rate entspricht somit ziemlich genau der erwarteten Wahrscheinlichkeit von $p = 0,2$.
+    \begin{figure}[h!]
+        \centering
+        \includegraphics{./lib/dist_bloomResult.png}
+        \caption{Bloom Result}
+        \label{fig:Bloom Result}
+    \end{figure}
 
 \end{document}
