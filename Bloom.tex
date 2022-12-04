@@ -12,7 +12,6 @@
 \begin{document}
     \maketitle
 
-
     \section{Einleitung}
     Ein Bloom Filter, benannt nach seinem Erfinder Burton Howard Bloom, ist eine auf Wahrscheinlichkeit basierende Set Datenstruktur. Anders als herkömmliche Set Datenstrukturen erlaubt der Bloom Filter kein entfernen von Elementen und liefert kein garantiertes Ergebniss für die Zugehörigkeit eines Elements. Dies erlaubt es einem Bloom Filter Speichereffizienter zu sein als herkömmliche Set Datenstrukturen.
 
@@ -28,7 +27,7 @@
             & Löschen von Elementen nicht möglich \\
         \end{tabular}
     \end{center}
-    Die Möglichkeit von false positives ist sogenannten "Hash-Overlaps" geschuldet. Dabei kommt es bei nicht in der Menge vorhandem Elementen zu den selben Hashwerten wie bei einem anderen, bereits in der Menge enthaltenem Elemen. Für alle gesuchten Elemente, die sich nicht in der Menge befinden, kann man dafür eine klare Aussage machen, dass sie nicht in der Menge ist. Daraus folgen zwei Aussagen die diese Datenstruktur zurückgibt wenn man die Zugehörigkeit eines Elements abfragt:
+    Die Möglichkeit von false positives ist sogenannten "Hash-Overlaps" geschuldet. Dabei kommt es bei nicht in der Menge vorhandenen Elementen zu den selben Hashwerten wie bei einem anderen, bereits in der Menge enthaltenem Element. Für alle gesuchten Elemente, die sich nicht in der Menge befinden, kann man dafür eine klare Aussage machen, dass sie nicht in der Menge ist. Daraus folgen zwei Aussagen die diese Datenstruktur zurückgibt wenn man die Zugehörigkeit eines Elements abfragt:
 
     \begin{itemize}
         \item Is probably in set (positive)
@@ -39,7 +38,7 @@
 
 
     \section{Praxisbeispiel}
-    Der Webbrowser Google Chrome verwendete einen Bloomfilter um potenziell gefährliche URLs (wie z.B. Spam oder Malware) zu erkennen. Malwarescans werden auf Googles eigenen Servers gemacht was diese Operation Zeit- und Rechenaufwändig macht. Damit nicht jede Seite einem solchen Malwarescan unterzogen wird zuerst der Bloom Filter befragt, ob eine URL potenziell gefährlich ist. Nur bei einem positiven Resultat wird die URL auf Googles eigenen Servers einem Malewarescan unterzogen.
+    Der Webbrowser Google Chrome verwendete einen Bloom Filter um potenziell gefährliche URLs (wie z.B. Spam oder Malware) zu erkennen. Malwarescans werden auf Googles eigenen Servers gemacht was diese Operation Zeit- und Rechenaufwändig macht. Damit nicht jede Seite einem solchen Malwarescan unterzogen wird, wird zuerst der Bloom Filter befragt, ob eine URL potenziell gefährlich ist. Nur bei einem positiven Resultat wird die URL auf Googles eigenen Servern einem Malewarescan unterzogen.
 
 
     \section{Funktionsweise}
@@ -110,7 +109,7 @@
         return true;
     }
     \end{lstlisting}
-    Sobald an einer Stelle im Filter der Wert $false$ angetroffen wird, kann mit 100% Sicherheit gesagt werden, dass ein Element nicht im Bloom Filter enthalten ist.
+    Sobald an einer Stelle im Filter der Wert $false$ angetroffen wird, kann mit 100\% Sicherheit gesagt werden, dass ein Element nicht im Bloom Filter enthalten ist.
 
     \clearpage
 
@@ -118,7 +117,7 @@
     \section{Erkenntnisse aus unserem Projekt}
     Wir testen unseren Bloom Filter mit der erhaltenen Wörterliste. Dabei fügen wir nur die Hälfte aller Wörter in den Bloom Filter ein. Die erwartete False-Positive Wahrscheinlichkeit haben wir mit $p = 0,2$ initialisert.
     \\
-    Mit der anderen Hälte überprüfen wir die Korrektheit des Bloom Filters. Dabei zählen wir die False Positives und Vergleich deren Anteil im vergleich zur Totalanzahl an Wörtern. In unseren Versuchen variierte die Anzahl der False Positives zwischen 5600 und 5900 und die False Positives Rate schwankte um $0,2 \pm 0,01$ herum. Die False Positives Rate entspricht somit ziemlich genau der erwarteten Wahrscheinlichkeit von $p = 0,2$.
+    Mit der anderen Hälfte überprüfen wir die Korrektheit des Bloom Filters. Dabei zählen wir die False Positives und Vergleich deren Anteil im vergleich zur Totalanzahl an Wörtern. In unseren Versuchen variierte die Anzahl der False Positives zwischen 5600 und 5900 und die False Positives Rate schwankte um $0,2 \pm 0,01$ herum. Die False Positives Rate entspricht somit ziemlich genau der erwarteten Wahrscheinlichkeit von $p = 0,2$.
     \begin{figure}[h!]
         \centering
         \includegraphics{./lib/dist_bloomResult.png}
